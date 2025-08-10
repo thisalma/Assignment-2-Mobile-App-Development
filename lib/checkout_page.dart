@@ -46,7 +46,7 @@ class CheckoutPage extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   const Divider(thickness: 1.5),
                   const SizedBox(height: 12),
