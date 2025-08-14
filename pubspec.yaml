@@ -57,6 +57,7 @@ flutter:
     - assets/images/vecteezy_ai-generated-hot-chocolate-drink-in-a-mug_31112850.png
     - assets/images/png-clipart-instant-noodle-ramen-korean-cuisine-shin-ramyun-nongshim-chinese-noodles-soup-food.png
     - assets/images/cadbury-dairy-milk-chocolate-bar-yd73712s82pgjpg8-yd73712s82pgjpg8.png
+    - assets/images/food-pictures.jpg
   uses-material-design: true
 
 
