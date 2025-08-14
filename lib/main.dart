@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Food & Beverages App',
+      debugShowCheckedModeBanner: false, // 👈 This removes the debug badge
 
       // Light Theme
       theme: ThemeData(
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
       ),
 
-      //  Automatically use system setting
+      // Automatically use system setting
       themeMode: ThemeMode.system,
 
       initialRoute: '/',
