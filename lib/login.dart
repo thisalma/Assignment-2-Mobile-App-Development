@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'register.dart';
-import 'home.dart';
+import 'screens/splash_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,21 +21,18 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/food-pictures.jpg'), // <-- Your image
+                image: AssetImage('assets/images/food-pictures.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Dark overlay for better readability
           Container(
             // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.3),
           ),
-          // Center login form
           Center(
             child: Container(
               width: 350,
@@ -104,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const HomePage()),
+                                builder: (context) => const SplashScreen()),
                           );
                         }
                       },
