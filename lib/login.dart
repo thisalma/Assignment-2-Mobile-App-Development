@@ -1,8 +1,9 @@
-// ignore_for_file: deprecated_member_use, duplicate_ignore
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'register.dart';
 import 'screens/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Container(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.3),
           ),
           Center(
@@ -96,8 +96,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true); // save login
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
