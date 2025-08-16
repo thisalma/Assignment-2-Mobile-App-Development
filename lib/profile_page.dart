@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'user_profile.dart';
 import 'login.dart';
 
@@ -22,6 +24,42 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final user = UserProfile();
 
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
+
+  // Load image path from SharedPreferences
+  void _loadProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final path = prefs.getString('profileImagePath');
+    if (path != null && path.isNotEmpty) {
+      setState(() {
+        _profileImage = File(path);
+      });
+    }
+  }
+
+  // Save image path to SharedPreferences
+  void _saveProfileImagePath(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profileImagePath', path);
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+      _saveProfileImagePath(pickedFile.path);
+    }
+  }
+
   void saveDetails() {
     setState(() {
       user.name = nameController.text;
@@ -39,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false); // clear login
+    await prefs.setBool('isLoggedIn', false);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -67,6 +105,42 @@ class _ProfilePageState extends State<ProfilePage> {
           child: ListView(
             children: [
               const SizedBox(height: 20),
+
+              // Profile Picture with Camera Icon
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage:
+                          _profileImage != null ? FileImage(_profileImage!) : null,
+                      child: _profileImage == null
+                          ? const Icon(Icons.person, size: 60, color: Colors.white)
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.pink,
+                          ),
+                          child: const Icon(Icons.camera_alt,
+                              color: Colors.white, size: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -83,6 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 20),
+
               if (showDetailsForm) ...[
                 TextField(
                   controller: nameController,
@@ -108,11 +183,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: const Text('Save'),
                 ),
               ],
+
               if (!showDetailsForm && user.name.isNotEmpty) ...[
                 const Divider(height: 30),
                 const Text("Saved Info:",
-                    style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 Text("Name: ${user.name}"),
                 Text("Email: ${user.email}"),
