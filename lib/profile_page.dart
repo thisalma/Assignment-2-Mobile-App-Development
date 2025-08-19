@@ -31,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _loadProfileImage();
+    _loadDetails();
   }
 
   // Load image path from SharedPreferences
@@ -60,6 +61,26 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Load details from SharedPreferences
+  void _loadDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      user.name = prefs.getString('name') ?? "";
+      user.email = prefs.getString('email') ?? "";
+      user.contact = prefs.getString('contact') ?? "";
+      user.address = prefs.getString('address') ?? "";
+    });
+  }
+
+  // Save details into SharedPreferences
+  void _saveDetailsToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', user.name);
+    await prefs.setString('email', user.email);
+    await prefs.setString('contact', user.contact);
+    await prefs.setString('address', user.address);
+  }
+
   void saveDetails() {
     setState(() {
       user.name = nameController.text;
@@ -69,6 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
       showDetailsForm = false;
     });
+
+    _saveDetailsToPrefs();
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Details saved successfully')),
@@ -141,62 +164,112 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const SizedBox(height: 30),
 
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showDetailsForm = !showDetailsForm;
-                  });
-                },
-                child: const Text(
-                  'Detail >',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
-                  ),
+              // DETAILS SECTION
+              const Text(
+                "Details",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               if (showDetailsForm) ...[
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                TextField(
-                  controller: contactController,
-                  decoration: const InputDecoration(labelText: 'Contact Number'),
-                  keyboardType: TextInputType.phone,
-                ),
-                TextField(
-                  controller: addressController,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: saveDetails,
-                  child: const Text('Save'),
-                ),
-              ],
+                _buildTextFieldCard("Name", nameController),
+                const SizedBox(height: 12),
+                _buildTextFieldCard("Email", emailController,
+                    keyboard: TextInputType.emailAddress),
+                const SizedBox(height: 12),
+                _buildTextFieldCard("Contact Number", contactController,
+                    keyboard: TextInputType.phone),
+                const SizedBox(height: 12),
+                _buildTextFieldCard("Address", addressController),
 
-              if (!showDetailsForm && user.name.isNotEmpty) ...[
-                const Divider(height: 30),
-                const Text("Saved Info:",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                Text("Name: ${user.name}"),
-                Text("Email: ${user.email}"),
-                Text("Contact: ${user.contact}"),
-                Text("Address: ${user.address}"),
+                // Save button bottom-right
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.pink,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onPressed: saveDetails,
+                    child: const Text("Save",
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ),
+              ] else ...[
+                _buildInfoCard("Name", user.name),
+                const SizedBox(height: 8),
+                _buildInfoCard("Email", user.email),
+                const SizedBox(height: 8),
+                _buildInfoCard("Contact", user.contact),
+                const SizedBox(height: 8),
+                _buildInfoCard("Address", user.address),
+
+                // Edit button bottom-right
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.pink,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        showDetailsForm = true;
+                        nameController.text = user.name;
+                        emailController.text = user.email;
+                        contactController.text = user.contact;
+                        addressController.text = user.address;
+                      });
+                    },
+                    child: const Text("Edit",
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ),
               ]
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Widget for editable text fields in cards
+  Widget _buildTextFieldCard(String label, TextEditingController controller,
+      {TextInputType keyboard = TextInputType.text}) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: TextField(
+          controller: controller,
+          keyboardType: keyboard,
+          style: const TextStyle(fontSize: 18),
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget for displaying saved info in cards
+  Widget _buildInfoCard(String title, String value) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: ListTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(
+          value.isNotEmpty ? value : '-',
+          style: const TextStyle(fontSize: 18),
         ),
       ),
     );
