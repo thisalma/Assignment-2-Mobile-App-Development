@@ -3,7 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = "http://your-laravel-url/api";
+  static const String baseUrl = "http://10.0.2.2:8000/api"; // for Android Emulator
+  // For iOS Simulator use: http://127.0.0.1:8000/api
+  // For physical devices, use your machine's IP
 
   /// Register user
   static Future<Map<String, dynamic>> register(
@@ -39,16 +41,21 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// Save token locally
+  static Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("token", token);
+  }
+
   /// Logout user
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("token");
   }
 
-  /// Handle HTTP response
+  /// Response handler
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final data = jsonDecode(response.body);
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return {"success": true, "data": data};
     } else {
