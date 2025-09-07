@@ -82,7 +82,12 @@ class CategoryPage extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text('${product.name}\n${product.price}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                            '${product.name}\nRs. ${product.price}', 
+                            textAlign: TextAlign.center, 
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+
                             const SizedBox(height: 6),
                             ElevatedButton.icon(
                               onPressed: () => onAddToCart(product),
