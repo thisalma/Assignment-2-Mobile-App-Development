@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'product_data.dart';
 import 'category_page.dart';
-import 'cart_page.dart'; 
-import 'profile_page.dart'; 
+import 'cart_page.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       HomeContent(onAddToCart: addToCart),
       CategoryPage(onAddToCart: addToCart),
       CartPage(cartItems: cart, onRemove: removeFromCart),
-      const ProfilePage(), 
+      const ProfilePage(),
     ];
   }
 
@@ -68,10 +68,30 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   final Function(Product) onAddToCart;
 
   const HomeContent({super.key, required this.onAddToCart});
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Product> displayedProducts = productList; // initially all products
+
+  void _filterProducts(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        displayedProducts = productList;
+      } else {
+        displayedProducts = productList
+            .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +116,10 @@ class HomeContent extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const TextField(
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _filterProducts,
+                  decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search),
                     hintText: 'Search...',
                     border: InputBorder.none,
@@ -118,6 +140,7 @@ class HomeContent extends StatelessWidget {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
+
         SizedBox(
           height: 100,
           child: ListView(
@@ -139,7 +162,7 @@ class HomeContent extends StatelessWidget {
           ),
         ),
 
-        // Product Grid
+        // Product Grid (filtered results)
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -148,7 +171,7 @@ class HomeContent extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 0.7,
-              children: productList.map((product) {
+              children: displayedProducts.map((product) {
                 return Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black12),
@@ -164,14 +187,13 @@ class HomeContent extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                            '${product.name}\nRs. ${product.price}', 
-                            textAlign: TextAlign.center, 
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-
+                              '${product.name}\nRs. ${product.price}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             const SizedBox(height: 6),
                             ElevatedButton.icon(
-                              onPressed: () => onAddToCart(product),
+                              onPressed: () => widget.onAddToCart(product),
                               icon: const Icon(Icons.shopping_cart_outlined, size: 16),
                               label: const Text('ADD TO CART'),
                               style: ElevatedButton.styleFrom(
