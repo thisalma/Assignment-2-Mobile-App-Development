@@ -51,4 +51,19 @@ List<Product> productList = [
     image: 'assets/images/cadbury-dairy-milk-chocolate-bar-yd73712s82pgjpg8-yd73712s82pgjpg8.png',
     description: 'Smooth and creamy chocolate bar.',
   ),
+
+    Product(
+    name: 'Chocolate busket',
+    price: 1200.0,
+    image: 'assets/images/png-clipart-food-gift-baskets-cadbury-dairy-milk-chocolate-ferrero-rocher-chocolate-food-milk-chocolate-thumbnail.png',
+    description: 'Smooth and creamy chocolate buskut with different falovors.',
+  ),
+
+   Product(
+    name: 'Potato Chips',
+    price: 1000.0,
+    image: 'assets/images/pngtree-hyperrealistic-potato-chips-packet-with-chilled-beverage-png-image_10555480.png',
+    description: 'Smooth and crunchy.',
+  ),
+
 ];
