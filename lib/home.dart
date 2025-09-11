@@ -3,6 +3,7 @@ import 'product_data.dart';
 import 'category_page.dart';
 import 'cart_page.dart';
 import 'profile_page.dart';
+import 'product_details.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,8 +23,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _pages = [
-      HomeContent(onAddToCart: addToCart),
-      CategoryPage(onAddToCart: addToCart),
+      HomeContent(onAddToCart: addToCart, cart: cart),
+      CategoryPage(onAddToCart: addToCart, cart: cart),
       CartPage(cartItems: cart, onRemove: removeFromCart),
       const ProfilePage(),
     ];
@@ -70,8 +71,9 @@ class _HomePageState extends State<HomePage> {
 
 class HomeContent extends StatefulWidget {
   final Function(Product) onAddToCart;
+  final List<Product> cart;
 
-  const HomeContent({super.key, required this.onAddToCart});
+  const HomeContent({super.key, required this.onAddToCart, required this.cart});
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -79,7 +81,7 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   final TextEditingController _searchController = TextEditingController();
-  List<Product> displayedProducts = productList; // initially all products
+  List<Product> displayedProducts = productList;
 
   void _filterProducts(String query) {
     setState(() {
@@ -97,7 +99,6 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Gradient + Search Bar
         Container(
           width: double.infinity,
           padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 20),
@@ -129,8 +130,6 @@ class _HomeContentState extends State<HomeContent> {
             ],
           ),
         ),
-
-        // Sales Section
         Container(
           color: const Color(0xFFFFC1CC),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -140,7 +139,6 @@ class _HomeContentState extends State<HomeContent> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-
         SizedBox(
           height: 100,
           child: ListView(
@@ -161,8 +159,6 @@ class _HomeContentState extends State<HomeContent> {
             }),
           ),
         ),
-
-        // Product Grid (filtered results)
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -172,39 +168,50 @@ class _HomeContentState extends State<HomeContent> {
               mainAxisSpacing: 12,
               childAspectRatio: 0.7,
               children: displayedProducts.map((product) {
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.asset(product.image, fit: BoxFit.cover),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              '${product.name}\nRs. ${product.price}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 6),
-                            ElevatedButton.icon(
-                              onPressed: () => widget.onAddToCart(product),
-                              icon: const Icon(Icons.shopping_cart_outlined, size: 16),
-                              label: const Text('ADD TO CART'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                textStyle: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailsPage(
+                          product: product,
+                          onAddToCart: widget.onAddToCart,
                         ),
                       ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(child: Image.asset(product.image, fit: BoxFit.cover)),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${product.name}\nRs. ${product.price}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 6),
+                              ElevatedButton.icon(
+                                onPressed: () => widget.onAddToCart(product),
+                                icon: const Icon(Icons.shopping_cart_outlined, size: 16),
+                                label: const Text('ADD TO CART'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  textStyle: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'product_data.dart';
+import 'product_details.dart';
 
 class CategoryPage extends StatelessWidget {
   final Function(Product) onAddToCart;
+  final List<Product> cart;
 
-  const CategoryPage({super.key, required this.onAddToCart});
+  const CategoryPage({super.key, required this.onAddToCart, required this.cart});
 
   @override
   Widget build(BuildContext context) {
@@ -70,38 +72,50 @@ class CategoryPage extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final product = productList[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(child: Image.asset(product.image, fit: BoxFit.cover)),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                            '${product.name}\nRs. ${product.price}', 
-                            textAlign: TextAlign.center, 
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-
-                            const SizedBox(height: 6),
-                            ElevatedButton.icon(
-                              onPressed: () => onAddToCart(product),
-                              icon: const Icon(Icons.shopping_cart_outlined, size: 16),
-                              label: const Text('ADD TO CART'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                textStyle: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailsPage(
+                          product: product,
+                          onAddToCart: onAddToCart,
                         ),
                       ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(child: Image.asset(product.image, fit: BoxFit.cover)),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${product.name}\nRs. ${product.price}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 6),
+                              ElevatedButton.icon(
+                                onPressed: () => onAddToCart(product),
+                                icon: const Icon(Icons.shopping_cart_outlined, size: 16),
+                                label: const Text('ADD TO CART'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  textStyle: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
