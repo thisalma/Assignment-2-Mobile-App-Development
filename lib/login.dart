@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
 import 'screens/splash_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart'; // ✅ import service
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isLoading = false; // loading state
 
   @override
   Widget build(BuildContext context) {
@@ -95,20 +97,35 @@ class _LoginScreenState extends State<LoginScreen> {
                               : null,
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('isLoggedIn', true); // save login
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SplashScreen()),
-                          );
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                setState(() => _isLoading = true);
+
+                                bool success = await ApiService().login(
+                                  _usernameController.text,
+                                  _passwordController.text,
+                                );
+
+                                setState(() => _isLoading = false);
+
+                                if (success) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const SplashScreen()),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Login failed")),
+                                  );
+                                }
+                              }
+                            },
+                            child: const Text('Login'),
+                          ),
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () {

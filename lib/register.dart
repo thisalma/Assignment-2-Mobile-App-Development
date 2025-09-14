@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart'; // ✅ import service
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,6 +16,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isLoading = false; // loading state
 
   @override
   Widget build(BuildContext context) {
@@ -67,19 +69,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       value == null || value.trim().isEmpty ? 'Please enter a password' : null,
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('isLoggedIn', true); // save login
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SplashScreen()),
-                      );
-                    }
-                  },
-                  child: const Text('Register'),
-                ),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() => _isLoading = true);
+
+                            bool success = await ApiService().register(
+                              _usernameController.text,
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+
+                            setState(() => _isLoading = false);
+
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SplashScreen()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Registration failed")),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Register'),
+                      ),
               ],
             ),
           ),
