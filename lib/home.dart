@@ -172,15 +172,15 @@ class _HomeContentState extends State<HomeContent> {
             ),
           )
         else
-          // Show Hot Deals + Full Product Grid
+          // Show Hot Deals + Full Product Grid in a single scroll
           Expanded(
-            child: Column(
+            child: ListView(
               children: [
                 // Hot Deals Section
                 Container(
                   color: Colors.orange.shade100,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
                   alignment: Alignment.centerLeft,
                   child: const Text(
                     '🔥 Hot Deals',
@@ -207,19 +207,19 @@ class _HomeContentState extends State<HomeContent> {
                 ),
 
                 // Product Grid
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.7,
-                      children: productList.map((product) {
-                        return _buildProductCard(product);
-                      }).toList(),
-                    ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.7,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    children: productList.map((product) {
+                      return _buildProductCard(product);
+                    }).toList(),
                   ),
                 ),
               ],
