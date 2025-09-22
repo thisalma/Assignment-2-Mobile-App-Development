@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'product_data.dart';
 import 'user_profile.dart';
-import 'thank_you_page.dart'; 
+import 'thank_you_page.dart';
 
 class CheckoutPage extends StatelessWidget {
   final List<Product> checkoutItems;
@@ -81,6 +81,23 @@ class CheckoutPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  final user = UserProfile();
+
+                  if (user.name.isEmpty ||
+                      user.email.isEmpty ||
+                      user.contact.isEmpty ||
+                      user.address.isEmpty) {
+                    // Show error if shipping details are missing
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please fill in your shipping details in the profile page."),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return; // stop here
+                  }
+
+                  // If details are available, go to Thank You page
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ThankYouPage()),
