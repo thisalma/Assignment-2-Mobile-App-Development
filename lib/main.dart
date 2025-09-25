@@ -16,18 +16,58 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Food & Beverages App',
       debugShowCheckedModeBanner: false,
+
+      // LIGHT THEME
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.pink,
         scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.pink,
+          foregroundColor: Colors.white, // text/icons
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.pink,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.pink,
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black),
+        ),
       ),
+
+      // DARK THEME
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.pink,
         scaffoldBackgroundColor: Colors.black,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.pink,
+          foregroundColor: Colors.white, // text/icons
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.pink,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.pink,
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+        ),
       ),
-      themeMode: ThemeMode.system,
+
+      themeMode: ThemeMode.system, // follow system theme
       home: const CheckLogin(),
+
       routes: {
         '/home': (context) => const HomePage(),
         '/login': (context) => const LoginScreen(),

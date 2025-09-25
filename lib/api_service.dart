@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://192.168.1.5:8000/api"; // Your Laravel IP
+  static const String baseUrl = "http://192.168.1.3:8000/api"; // Your Laravel IP
 
   Future<Map<String, dynamic>> register(String username, String email, String password) async {
     final response = await http.post(
