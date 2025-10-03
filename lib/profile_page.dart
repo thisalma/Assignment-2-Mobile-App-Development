@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'user_profile.dart';
 import 'login.dart';
+import 'order_history.dart'; // Import the new Order History screen
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -209,27 +210,53 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 8),
                 _buildInfoCard("Address", user.address),
 
-                // Edit button bottom-right
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                // Row with Order History and Edit buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Order History Button (left)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[700],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const OrderHistoryScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "Order History",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        showDetailsForm = true;
-                        nameController.text = user.name;
-                        emailController.text = user.email;
-                        contactController.text = user.contact;
-                        addressController.text = user.address;
-                      });
-                    },
-                    child: const Text("Edit",
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
-                  ),
+
+                    // Edit Button (right)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pink,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          showDetailsForm = true;
+                          nameController.text = user.name;
+                          emailController.text = user.email;
+                          contactController.text = user.contact;
+                          addressController.text = user.address;
+                        });
+                      },
+                      child: const Text(
+                        "Edit",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ),
               ]
             ],
