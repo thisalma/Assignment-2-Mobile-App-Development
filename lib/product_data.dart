@@ -46,7 +46,7 @@ List<Product> productList = [
     description: 'Quick and tasty ramen noodles.',
   ),
   Product(
-    name: 'Cadbury Dairy Milk',
+    name: 'Dairy Milk Chocolate',
     price: 1200.0,
     image: 'assets/images/cadbury-dairy-milk-chocolate-bar-yd73712s82pgjpg8-yd73712s82pgjpg8.png',
     description: 'Smooth and creamy chocolate bar.',
