@@ -3,17 +3,32 @@ import 'product_data.dart';
 import 'user_profile.dart';
 import 'thank_you_page.dart';
 
-class CheckoutPage extends StatelessWidget {
+class CheckoutPage extends StatefulWidget {
   final List<Product> checkoutItems;
 
   const CheckoutPage({super.key, required this.checkoutItems});
 
   @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> {
+  String? selectedPayment; // No default selection
+  double codFee = 250.0;
+
+  // Card details controllers
+  final TextEditingController cardNumberController = TextEditingController();
+  final TextEditingController expiryController = TextEditingController();
+  final TextEditingController cvvController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    double total = checkoutItems.fold(
+    double subtotal = widget.checkoutItems.fold(
       0,
       (sum, item) => sum + (item.price * item.quantity),
     );
+
+    double total = subtotal + (selectedPayment == 'cod' ? codFee : 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,18 +44,15 @@ class CheckoutPage extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
             Expanded(
               child: ListView(
                 children: [
-                  ...checkoutItems.map((item) {
+                  ...widget.checkoutItems.map((item) {
                     final itemTotal = item.price * item.quantity;
                     return ListTile(
                       leading: Image.asset(item.image, width: 50, fit: BoxFit.cover),
                       title: Text(item.name),
-                      subtitle: Text(
-                        'Qty: ${item.quantity} x Rs. ${item.price.toStringAsFixed(2)}',
-                      ),
+                      subtitle: Text('Qty: ${item.quantity} x Rs. ${item.price.toStringAsFixed(2)}'),
                       trailing: Text(
                         'Rs. ${itemTotal.toStringAsFixed(2)}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -57,6 +69,37 @@ class CheckoutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _buildShippingDetails(),
+
+                  const SizedBox(height: 16),
+
+                  // Payment options
+                  const Text(
+                    'Payment Method',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  RadioListTile(
+                    title: Text('Cash on Delivery (Rs. $codFee)'),
+                    value: 'cod',
+                    groupValue: selectedPayment,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedPayment = value.toString();
+                      });
+                    },
+                  ),
+                  RadioListTile(
+                    title: const Text('Card Payment'),
+                    value: 'card',
+                    groupValue: selectedPayment,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedPayment = value.toString();
+                      });
+                    },
+                  ),
+
+                  if (selectedPayment == 'card') _buildCardDetails(),
 
                   const SizedBox(height: 16),
                   Row(
@@ -87,17 +130,39 @@ class CheckoutPage extends StatelessWidget {
                       user.email.isEmpty ||
                       user.contact.isEmpty ||
                       user.address.isEmpty) {
-                    // Show error if shipping details are missing
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Please fill in your shipping details in the profile page."),
                         backgroundColor: Colors.red,
                       ),
                     );
-                    return; // stop here
+                    return;
                   }
 
-                  // If details are available, go to Thank You page
+                  if (selectedPayment == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please select a payment method."),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  if (selectedPayment == 'card') {
+                    if (cardNumberController.text.isEmpty ||
+                        expiryController.text.isEmpty ||
+                        cvvController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please fill in your card details."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ThankYouPage()),
@@ -136,6 +201,49 @@ class CheckoutPage extends StatelessWidget {
         Text("Email: ${user.email}"),
         Text("Contact: ${user.contact}"),
         Text("Address: ${user.address}"),
+      ],
+    );
+  }
+
+  Widget _buildCardDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        TextField(
+          controller: cardNumberController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Card Number',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: expiryController,
+                keyboardType: TextInputType.datetime,
+                decoration: const InputDecoration(
+                  labelText: 'Expiry Date',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: cvvController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'CVV',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
