@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://192.168.1.6:8000/api"; // Your Laravel IP
+  static const String baseUrl = "http://192.168.1.3:8000/api"; // Your Laravel IP
 
   // Register
   Future<Map<String, dynamic>> register(String username, String email, String password) async {
@@ -43,22 +43,20 @@ class ApiService {
 
   // Place Order
   Future<Map<String, dynamic>> placeOrder(
-      int userId,
-      List<Map<String, dynamic>> items,
-      double total,
-      String paymentMethod,
-      {String? token} // optional token for auth
+    List<Map<String, dynamic>> items,
+    double total,
+    String paymentMethod,
+    {required String token} // token required for auth
   ) async {
-    final headers = {'Content-Type': 'application/json'};
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
-    }
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
 
     final response = await http.post(
       Uri.parse('$baseUrl/mobile/orders'),
       headers: headers,
       body: jsonEncode({
-        'user_id': userId,
         'items': items,
         'total': total,
         'payment_method': paymentMethod,
