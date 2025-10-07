@@ -51,6 +51,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ✅ Added AppBar with back arrow
+      appBar: AppBar(
+        backgroundColor: Colors.pink,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Go back to login page
+          },
+        ),
+        title: const Text('Register'),
+      ),
       body: Center(
         child: Container(
           width: 350,
